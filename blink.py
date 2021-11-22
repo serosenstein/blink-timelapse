@@ -10,7 +10,12 @@ from blinkpy.helpers.util import json_load
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+import logging
 import vardata
+
+
+
+
 pid = os.getpid()
 pid = str(pid)
 
@@ -21,9 +26,22 @@ fontLocation = vardata.fontLocation
 dir = vardata.dir
 credSave = vardata.credSave
 
+sec_value = counts * interval  % (24*3600)
+hour_value = sec_value // 3600
+sec_value %= 3600
+min = sec_value // 60
+sec_value %= 60
+
+min = str(min)
+sec_value = str(sec_value)
+hour_value = str(hour_value)
 send_prowls = vardata.send_prowls
 send_emails = vardata.send_emails
 send_twilio = vardata.send_twilio
+logPath = vardata.logPath
+logging.basicConfig(filename=logPath, format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.info("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
+print("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
 
 
 now = datetime.datetime.now()
@@ -37,9 +55,11 @@ blink = Blink()
 # Create target Directory if don't exist
 if not os.path.exists(dirName):
   os.makedirs(dirName)
-  print("Directory " , dirName ,  " Created ")
+  print("Directory " + dirName +  " Created ")
+  logging.info("Directory " + dirName +  " Created ")
 else:
-  print("Directory " , dirName ,  " already exists")
+  print("Directory " + dirName +  " already exists")
+  logging.info("Directory " + dirName +  " already exists")
 auth = Auth(json_load(credSave), no_prompt=True)
 blink.auth = auth
 blink.start()
@@ -51,6 +71,7 @@ for i in range (counts):
    blink.refresh()             # Get new information from server
    fileName = dirName + '/image' + str_i.zfill(5) + '.jpg'
    print(fileName)
+   logging.info(fileName)
    now = datetime.datetime.now()
    timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
    camera.image_to_file(fileName)
@@ -61,6 +82,7 @@ for i in range (counts):
    I1.text((36, 36), timestamp, fill=(255, 0, 0), font=font)
    img.save(fileName)
    print("number " + str_i + " out of " + str(counts))
+   logging.info("number " + str_i + " out of " + str(counts))
    time.sleep(interval)
 os.system('ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4')
 if send_emails:                                               
@@ -72,6 +94,8 @@ if send_emails:
   smtp_port = vardata.smtp_port                               
   if not [x for x in (sender_email,smtp_password,receiver_email,smtp_server,smtp_port) if x is None]:                                         
     pass
+  else:
+    logging.warn("a smtp variable wasn't set")
 
 def SendTwilio(info):
   from twilio.rest import Client
@@ -81,6 +105,8 @@ def SendTwilio(info):
   twilio_token = vardata.twilio_token
   if not [x for x in (twilio_to,twilio_sid,twilio_token) if x is None]:
     pass
+  else:
+    logging.warm("twilio variable wasn't set")
   client = Client(twilio_sid, twilio_token)
   message = client.messages \
                 .create(
@@ -120,8 +146,10 @@ def SendEmail(info):
     server.sendmail(sender_email, receiver_email, msg.as_string())
   #debug comment
   print("sending email to " + receiver_email + " with this info " + info)
+  logging.info("sending email to " + receiver_email + " with this info " + info)
  except:
   print("Error sending email: " + str(sys.exc_info()[0])) 
+  logging.warn("Error sending email: " + str(sys.exc_info()[0])) 
   raise
 def SendProwl(info):
  from pushno import PushNotification
@@ -134,6 +162,7 @@ def SendProwl(info):
      pn.send(event="Timelapse Notification", description=info)
  else:
      print(res)
+     logging.warn(res)
 if send_prowls:
   SendProwl("Finished " +  dirName + "/" + date + '.output.mp4')
 if send_emails:

@@ -3,3 +3,4 @@ blink.credsave
 time-lapses/*
 vardata.py
 __pycache__/*
+blink.log

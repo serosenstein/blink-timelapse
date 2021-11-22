@@ -29,3 +29,4 @@ camera_name = 'aerocam'
 fontLocation = "NimbusMonoPS-Bold.t1"
 dir = './time-lapses/'
 credSave = "./blink.credsave"
+logPath = "./blink.log"

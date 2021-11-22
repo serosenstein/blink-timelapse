@@ -1,3 +1,5 @@
 blink.credsave
 *.credsave
 time-lapses/*
+vardata.py
+__pycache__/*

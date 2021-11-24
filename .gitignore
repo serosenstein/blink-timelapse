@@ -4,3 +4,5 @@ time-lapses/*
 vardata.py
 __pycache__/*
 blink.log
+pidfile
+nohup.out

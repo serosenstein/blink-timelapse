@@ -5,6 +5,7 @@ import os
 import sys
 import time
 import datetime
+import subprocess
 from blinkpy.helpers.util import json_load
 #pip install Pillow
 from PIL import Image
@@ -18,6 +19,14 @@ import vardata
 
 pid = os.getpid()
 pid = str(pid)
+pidfile = "./pidfile"
+
+if not os.path.isfile(pidfile):
+  f = open(pidfile, "a")
+  f.write(pid)
+  f.close()
+else:
+  exit("PID file " + pidfile + " exists already")
 
 interval = vardata.interval
 counts = vardata.counts
@@ -84,7 +93,10 @@ for i in range (counts):
    print("number " + str_i + " out of " + str(counts))
    logging.info("number " + str_i + " out of " + str(counts))
    time.sleep(interval)
-os.system('ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4')
+#os.system('ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4')
+r = subprocess.check_output('/usr/bin/ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4',shell=True) 
+print(r)
+logging.info(r)
 if send_emails:                                               
   import smtplib, ssl
   sender_email = vardata.sender_email                         
@@ -169,3 +181,6 @@ if send_emails:
   SendEmail("Finished " +  dirName + "/" + date + '.output.mp4')
 if send_twilio:
   SendTwilio("Finished " +  dirName + "/" + date + '.output.mp4')
+
+#cleanup pid
+os.remove(pidfile)

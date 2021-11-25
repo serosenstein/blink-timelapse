@@ -92,6 +92,10 @@ for i in range (counts):
    logging.info("number " + str_i + " out of " + str(counts))
    time.sleep(interval)
 ffmpeg_location = vardata.ffmpeg_location
+if not os.path.exists(ffmpeg_location):
+  logging.info("Can't find ffmpeg location at " + ffmpeg_location + "\nExiting now")
+  os.remove(pidfile)
+  exit("Can't find ffmpeg location at " + ffmpeg_location)
 cmd = ffmpeg_location + ' -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4'
 sp = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
 

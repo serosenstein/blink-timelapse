@@ -12,9 +12,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 import logging
-import vardata
-
-
+import vardata 
 
 
 pid = os.getpid()
@@ -36,6 +34,7 @@ dir = vardata.dir
 credSave = vardata.credSave
 
 sec_value = counts * interval  % (24*3600)
+day_value = counts * interval  // (24*3600)
 hour_value = sec_value // 3600
 sec_value %= 3600
 min = sec_value // 60
@@ -49,9 +48,8 @@ send_emails = vardata.send_emails
 send_twilio = vardata.send_twilio
 logPath = vardata.logPath
 logging.basicConfig(filename=logPath, format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
-logging.info("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
-print("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
-
+logging.info("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + "  days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
+print("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + " days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
 
 now = datetime.datetime.now()
 date = now.strftime('%Y-%m-%d-%H')
@@ -93,10 +91,24 @@ for i in range (counts):
    print("number " + str_i + " out of " + str(counts))
    logging.info("number " + str_i + " out of " + str(counts))
    time.sleep(interval)
-#os.system('ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4')
-r = subprocess.check_output('/usr/bin/ffmpeg -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4',shell=True) 
-print(r)
-logging.info(r)
+ffmpeg_location = vardata.ffmpeg_location
+cmd = ffmpeg_location + ' -i ' + dirName + "/image%05'd'.jpg -r 60 -s 640x480 -vcodec libx264 -b 1000k " + dirName + "/" + date + '.output.mp4'
+sp = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,universal_newlines=True)
+
+# Store the return code in rc variable
+rc=sp.wait()
+
+# Separate the output and error.
+# This is similar to Tuple where we store two values to two different variables
+out,err=sp.communicate()
+
+print('Return Code: ',rc)
+print('output is: \n', out)
+print('error is: \n', err)
+
+logging.info('\nReturn Code: ' + str(rc))
+logging.info('\noutput is: \n' +  out)
+logging.info('\nerror is: \n' + err)
 if send_emails:                                               
   import smtplib, ssl
   sender_email = vardata.sender_email                         

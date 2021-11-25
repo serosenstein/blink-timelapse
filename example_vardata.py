@@ -30,3 +30,4 @@ fontLocation = "NimbusMonoPS-Bold.t1"
 dir = './time-lapses/'
 credSave = "./blink.credsave"
 logPath = "./blink.log"
+ffmpeg_location = '/usr/bin/ffmpeg'

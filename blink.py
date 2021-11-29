@@ -58,7 +58,6 @@ logPath = vardata.logPath
 logging.basicConfig(filename=logPath, format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 logging.info("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + "  days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
 print("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + " days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
-exit("now")
 
 now = datetime.datetime.now()
 date = now.strftime('%Y-%m-%d-%H')

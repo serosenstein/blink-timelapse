@@ -27,7 +27,15 @@ else:
   exit("PID file " + pidfile + " exists already")
 
 interval = vardata.interval
-counts = vardata.counts
+duration_seconds = vardata.duration_seconds
+duration_minutes = vardata.duration_minutes
+duration_hours = vardata.duration_hours
+duration_days = vardata.duration_days
+
+duration_totalseconds = duration_seconds + (duration_minutes * 60) + (duration_hours * 60 * 60) + (duration_days * 24 * 60 * 60)
+
+
+counts =  duration_totalseconds // interval
 camera_name = vardata.camera_name
 fontLocation = vardata.fontLocation
 dir = vardata.dir
@@ -47,9 +55,10 @@ send_prowls = vardata.send_prowls
 send_emails = vardata.send_emails
 send_twilio = vardata.send_twilio
 logPath = vardata.logPath
-logging.basicConfig(filename=logPath, format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(filename=logPath, format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 logging.info("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + "  days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
 print("This will take " + str(counts) + " pictures, waiting " + str(interval) + " seconds between them, that's a total of " + str(day_value) + " days, " + hour_value + " hours, " + min + " minutes and " + sec_value + " seconds" )
+exit("now")
 
 now = datetime.datetime.now()
 date = now.strftime('%Y-%m-%d-%H')

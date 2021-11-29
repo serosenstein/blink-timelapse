@@ -23,11 +23,18 @@ twilio_sid="adflkjadaflkjaldflkjasdflkjadsfksb"
 twilio_token="asdlfjasdflkasdlfkjasdfrlslslsls"
 
 
-interval = 10
-counts = 2
 camera_name = 'aerocam'
 fontLocation = "NimbusMonoPS-Bold.t1"
 dir = './time-lapses/'
 credSave = "./blink.credsave"
 logPath = "./blink.log"
 ffmpeg_location = '/usr/bin/ffmpeg'
+
+#how long do you want it to run for, all of the duration_* variables will be summed up into seconds and divided by the interval to find out how many shots to take
+duration_hours = 1
+duration_days = 7
+duration_minutes = 0
+duration_seconds = 0
+
+#seconds between snapshots, recommend 2+ minutes
+interval = 120
